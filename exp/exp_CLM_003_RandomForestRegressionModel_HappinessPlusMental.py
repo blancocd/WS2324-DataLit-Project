@@ -9,9 +9,13 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
+from sklearn.impute import SimpleImputer
+
 import numpy as np
 #from sklearn.model_selection import GridSearchCV
 
+import os
+os.chdir("../dat/")
 
 # =============================================================================
 # LOAD THE CSV FILES AS DATAFRAMES
@@ -51,34 +55,32 @@ for df in df_happiness:
     threshold = 10
     df_transposed = df_transposed.dropna(axis=1, thresh=df_transposed.shape[0] - threshold + 1)
 
-    # # Instantiate the SimpleImputer with the desired strategy (e.g., 'mean')
-    # imputer = SimpleImputer(strategy='mean')
-
-    # # Apply imputation to the transposed DataFrame, starting from the specified row
-    # df_transposed_imputed = pd.DataFrame(imputer.fit_transform(df_transposed.iloc[1:]), columns=df_transposed.columns)
-
-    # # Concatenate the rows that were not imputed with the imputed rows
-    # df_imputed = pd.concat([df_transposed.iloc[:1], df_transposed_imputed], axis=0)
-
-    # # Transpose back
-    # df_imputed = df_imputed.T
-
-    # # Append the modified DataFrame to the list
-    # df_happiness_imputed.append(df_imputed)
     
     # Identify the rows with numeric values (excluding the first row)
     numeric_rows = df_transposed.iloc[1:]
 
     # Convert the numeric values to numeric type
-    numeric_rows = numeric_rows.apply(pd.to_numeric, errors='coerce')
+    numeric_rows = numeric_rows.astype(np.float64)
     
-    df_interpolated = numeric_rows.interpolate()
+    df_interpolated = numeric_rows.interpolate(axis=0)
     
     # Combine the first row (country names) with the converted numeric values
     df_interpolated = pd.concat([df_transposed.iloc[:1], df_interpolated])
-    
-    df_interpolated = df_interpolated.T
-    df_happiness_filled.append(df_interpolated)
+
+    # Instantiate the SimpleImputer with the desired strategy (e.g., 'mean')
+    imputer = SimpleImputer(strategy='mean')
+
+    # Apply imputation to the transposed DataFrame, starting from the specified row
+    df_transposed_imputed = pd.DataFrame(imputer.fit_transform(df_interpolated.iloc[1:]), columns=df_interpolated.columns)
+
+    # Concatenate the rows that were not imputed with the imputed rows
+    df_imputed = pd.concat([df_interpolated.iloc[:1], df_transposed_imputed], axis=0)
+
+    # Transpose back
+    df_imputed = df_imputed.T
+
+    # Append the modified DataFrame to the list
+    df_happiness_filled.append(df_imputed)
 # =============================================================================
 # CLEAN AND FILTER DATAFRAMES SO ALL HAVE THE SAME COUNTRIES AND YEARS
 # =============================================================================
