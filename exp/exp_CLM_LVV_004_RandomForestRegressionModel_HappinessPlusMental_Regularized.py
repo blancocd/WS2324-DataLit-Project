@@ -15,7 +15,10 @@ from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
 import numpy as np
 
-data = pd.read_csv("./dat/cleaned/data_for_regression.csv")
+data = pd.read_csv("../dat/cleaned/data_for_regression.csv")
+feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
+                 "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
+                 "Alcohol Abuse Disorder", "Random Data"]
 
 # Split the dataset into features (X) and the target variable (y)
 X = data.drop("Happiness Score", axis=1)

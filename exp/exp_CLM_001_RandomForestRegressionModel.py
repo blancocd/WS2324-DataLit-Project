@@ -10,6 +10,8 @@ Created on Wed Jan 10 15:56:34 2024
 # that the initial datasets have the same size (rows and columns). The explanation
 # for each step is written before the relevant code.
 
+import os
+os.chdir("../dat/cleaned/")
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -18,14 +20,14 @@ from sklearn.metrics import mean_squared_error
 #from sklearn.model_selection import GridSearchCV
 
 # Read the CSV files into a pandas DataFrame
-df_suicide_rates = pd.read_csv('Cleaned-Both-Sexes-Age-Standardized-Suicide-Rates.csv')
-df_schizo = pd.read_csv('Cleaned_Schizophrenia_Prevalence.csv')
-df_depression = pd.read_csv('Cleaned_Depression_Prevalence.csv')
-df_anxiety = pd.read_csv('Cleaned_Anxiety_Prevalence.csv')
-df_bipolar = pd.read_csv('Cleaned_Bipolar_Prevalence.csv')
-df_eating = pd.read_csv('Cleaned_Eating_Disorder_Prevalence.csv')
-df_drug = pd.read_csv('Cleaned_Drug_Use_Disorder_Prevalence.csv')
-df_alcohol =pd.read_csv('Cleaned_Alcohol_Use_Disorder_Prevalence.csv')
+df_suicide_rates = pd.read_csv('Both-Sexes-Age-Standardized-Suicide-Rates.csv')
+df_schizo = pd.read_csv('Schizophrenia_Prevalence.csv')
+df_depression = pd.read_csv('Depression_Prevalence.csv')
+df_anxiety = pd.read_csv('Anxiety_Prevalence.csv')
+df_bipolar = pd.read_csv('Bipolar_Prevalence.csv')
+df_eating = pd.read_csv('Eating_Disorder_Prevalence.csv')
+df_drug = pd.read_csv('Drug_Use_Disorder_Prevalence.csv')
+df_alcohol =pd.read_csv('Alcohol_Use_Disorder_Prevalence.csv')
 
 # Merge with the country_names_df to filter by common country names to have datasets of the same size
 df_suicide_rates = pd.merge(df_schizo, df_suicide_rates, on='Location').iloc[:, [1] + list(range(22, 42))]
@@ -98,3 +100,5 @@ feature_importance = rf_model.feature_importances_
 print("Feature Importance:")
 for i, importance in enumerate(feature_importance):
     print(f"Feature {i+1}: {importance:.3f}")
+
+os.chdir("../../")
