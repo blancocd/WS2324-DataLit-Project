@@ -1,45 +1,38 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jan 17 20:19:56 2024
-
-@author: Carla and Luciana
-"""
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Lasso
-from sklearn.linear_model import Ridge
-import numpy as np
 
+import numpy as np
+#from sklearn.model_selection import GridSearchCV
+
+import os
+os.chdir("./dat/cleaned/")
 
 # =============================================================================
 # LOAD THE CSV FILES AS DATAFRAMES
 # =============================================================================
 
 # Read the CSV files into a pandas DataFrame
-df_suicide_rates = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned-Both-Sexes-Age-Standardized-Suicide-Rates.csv')
-df_schizo = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Schizophrenia_Prevalence.csv')
-df_depression = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Depression_Prevalence.csv')
-df_anxiety = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Anxiety_Prevalence.csv')
-df_bipolar = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Bipolar_Prevalence.csv')
-df_eating = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Eating_Disorder_Prevalence.csv')
-df_drug = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Drug_Use_Disorder_Prevalence.csv')
-df_alcohol = pd.read_csv('/Users/lu/Desktop/Databases/Cleaned_Alcohol_Use_Disorder_Prevalence.csv')
+df_suicide_rates = pd.read_csv('Both-Sexes-Age-Standardized-Suicide-Rates.csv')
+df_schizo = pd.read_csv('Schizophrenia_Prevalence.csv')
+df_depression = pd.read_csv('Depression_Prevalence.csv')
+df_anxiety = pd.read_csv('Anxiety_Prevalence.csv')
+df_bipolar = pd.read_csv('Bipolar_Prevalence.csv')
+df_eating = pd.read_csv('Eating_Disorder_Prevalence.csv')
+df_drug = pd.read_csv('Drug_Use_Disorder_Prevalence.csv')
+df_alcohol =pd.read_csv('Alcohol_Use_Disorder_Prevalence.csv')
 
-df_corruption = pd.read_excel('/Users/lu/Desktop/Databases/Corruption.xlsx')
-df_GDP = pd.read_excel('/Users/lu/Desktop/Databases/GDP.xlsx')
-df_generosity = pd.read_excel('/Users/lu/Desktop/Databases/Generosity.xlsx')
-df_lifechoices = pd.read_excel('/Users/lu/Desktop/Databases/Life_Choices.xlsx')
-df_lifeladder = pd.read_excel('/Users/lu/Desktop/Databases/Life_Ladder.xlsx')
-df_socialsup = pd.read_excel('/Users/lu/Desktop/Databases/Social_Support.xlsx')
+df_corruption = pd.read_csv('Corruption.csv')
+df_GDP = pd.read_csv('GDP.csv')
+df_generosity = pd.read_csv('Generosity.csv')
+df_lifechoices = pd.read_csv('Life_Choices.csv')
+df_lifeladder = pd.read_csv('Life_Ladder.csv')
+df_socialsup = pd.read_csv('Social_Support.csv')
 
-df_happiness = [df_lifeladder, df_corruption, df_GDP, df_generosity, df_lifechoices, df_socialsup]
-df_mental = [df_suicide_rates, df_schizo.iloc[:, 1:], df_depression.iloc[:, 1:], df_anxiety.iloc[:, 1:],
-             df_bipolar.iloc[:, 1:], df_eating.iloc[:, 1:], df_drug.iloc[:, 1:], df_alcohol.iloc[:, 1:]]
+df_happiness = [df_lifeladder, df_corruption, df_GDP, df_generosity,df_lifechoices,df_socialsup]
+df_mental = [df_suicide_rates, df_schizo.iloc[:, 1:], df_depression.iloc[:, 1:], df_anxiety.iloc[:, 1:], df_bipolar.iloc[:, 1:], df_eating.iloc[:, 1:], df_drug.iloc[:, 1:], df_alcohol.iloc[:, 1:]]
 
 # =============================================================================
 # FILL NAN VALUES USING AN IMPUTER IN HAPPINESS SCORE DATAFRAMES
@@ -85,7 +78,7 @@ for df in df_happiness:
 # CLEAN AND FILTER DATAFRAMES SO ALL HAVE THE SAME COUNTRIES AND YEARS
 # =============================================================================
 
-# FOR THE HAPPINESS SCORE DATAFRAMES
+## FOR THE HAPPINESS SCORE DATAFRAMES
 
 # Extract country names from the first column of each DataFrame
 country_sets = [set(df['Unnamed: 0']) for df in df_happiness_filled]
@@ -96,13 +89,13 @@ common_countries = set.intersection(*country_sets)
 # Filter each DataFrame to keep only rows corresponding to common countries
 df_happiness_filtered = [df[df['Unnamed: 0'].isin(common_countries)] for df in df_happiness_filled]
 
-new_headers = list(range(2005, 2023))
+new_headers = list(range(2005, 2023))  
 
 # Iterate over each DataFrame and set the new headers starting from column 1
 for df in df_happiness_filtered:
     df.columns = [df.columns[0]] + new_headers
 
-# FOR THE MENTAL ILLNESS DATAFRAMES
+## FOR THE MENTAL ILLNESS DATAFRAMES
 
 # Extract country names from the first column of each DataFrame
 country_sets = [set(df['Location']) for df in df_mental]
@@ -113,7 +106,8 @@ common_countries = set.intersection(*country_sets)
 # Filter each DataFrame to keep only rows corresponding to common countries
 df_mental_filtered = [df[df['Location'].isin(common_countries)] for df in df_mental]
 
-# FOR BOTH COMBINED
+
+## FOR BOTH COMBINED
 # Identify the common set of years
 common_years = sorted(list(set.intersection(set(range(2005, 2023)), set(range(2000, 2020)))))
 
@@ -139,18 +133,18 @@ final_df_mental = [df[df["Location"].isin(common_countries)][common_years_str] f
 
 df_data = []
 for df in final_df_happiness:
-    df = df.values.astype(float)
+    df = df.values.astype(float);
     df_data.append(df)
 
 for df in final_df_mental:
-    df = df.values.astype(float)
+    df = df.values.astype(float);
     df_data.append(df)
 
 # Set a random seed for reproducibility (optional)
 np.random.seed(42)
 
 # Create a 162x20 array of random numbers between 0 and 1
-random_array = np.random.rand(117, 15)
+random_array = np.random.rand(113, 15)
 
 # =============================================================================
 # PREPARE DATA FOR THE REGRESSION MODEL FORMAT
@@ -163,84 +157,14 @@ for df in df_data[1:]:
 
 independent_data.append(random_array.flatten())
 
-feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
-                 "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
-                 "Alcohol Abuse Disorder", "Random Data"]
+feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates", "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder", "Alcohol Abuse Disorder", "Random Data"]
 
 # Create a DataFrame with all the data
 data = pd.DataFrame({"Happiness Score": target})
+
 for i, data_flat in enumerate(independent_data, 1):
-    data[f"Feature{i}"] = data_flat
+    data[feature_names[i-1]] = data_flat
 
-# Split the dataset into features (X) and the target variable (y)
-X = data.drop("Happiness Score", axis=1)
-y = data["Happiness Score"]
+data.to_csv('data_for_regression.csv')
 
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-
-# =============================================================================
-# APPLY REGRESSION MODEL AND DISPLAY RESULTS
-# =============================================================================
-# Create a Random Forest Regressor
-rf_model = RandomForestRegressor(max_depth=None, n_estimators=3000, max_features='sqrt', min_samples_leaf=1,
-                                 min_samples_split=2)
-
-# Fit the model on the training data
-rf_model.fit(X_train, y_train)
-
-# Make predictions on the test data
-y_pred = rf_model.predict(X_test)
-
-# Evaluate the model
-mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error: {mse:.3f}")
-
-# Inspect feature importance
-feature_importance = rf_model.feature_importances_
-print("Feature Importance:")
-for i, (feature, importance) in enumerate(zip(feature_names, feature_importance)):
-    print(f"{feature}: {importance:.3f}")
-
-# =============================================================================
-# L1 Regularization - Lasso
-# =============================================================================
-
-scaler = StandardScaler()
-# Extract features and target variable
-X = data.drop(columns=['Happiness Score'])
-X_scaled = scaler.fit_transform(X)  # standardize the features
-y = data['Happiness Score']
-
-# Create a Lasso model
-lasso_model = Lasso(alpha=0.1)  # Adjust the alpha parameter for regularization strength
-
-# Fit the model to the data
-lasso_model.fit(X_scaled, y)
-
-# Print the coefficients of the model
-coefficients = pd.Series(lasso_model.coef_, index=X.columns)
-print("\n\n****  Lasso Coefficients  ****")
-
-
-for feature, coef in list(zip(feature_names, lasso_model.coef_)):
-    print(f"{feature}: {coef:.15f}")
-
-# =============================================================================
-# L2 Regularization - Ridge regression
-# =============================================================================
-
-# Create a Ridge model
-ridge_model = Ridge(alpha=1)  # Adjust the alpha parameter for regularization strength
-
-# Fit the model to the standardized data
-ridge_model.fit(X_scaled, y)
-
-# Print the coefficients of the Ridge model
-coefficients_ridge = pd.Series(ridge_model.coef_, index=X.columns)
-print("\n\n****  Ridge Coefficients  ****")
-
-
-for feature, coef in list(zip(feature_names, ridge_model.coef_)):
-    print(f"{feature}: {coef:.15f}")
+os.chdir("../../")

@@ -6,10 +6,12 @@ Created on Wed Jan 10 16:07:20 2024
 """
 
 import pandas as pd
+import os
+os.chdir("./dat/")
 
 # Read the CSV file into a pandas DataFrame
 df = pd.read_csv('prevalence-by-mental-and-substance-use-disorder.csv')
-df_suiciderates = pd.read_csv('Cleaned-Both-Sexes-Age-Standardized-Suicide-Rates.csv')
+df_suiciderates = pd.read_csv('./cleaned/Both-Sexes-Age-Standardized-Suicide-Rates.csv')
 
 # Extract the headers for the illnesses from the first row, starting from the 4th column
 illness_columns = df.columns[3:].tolist()
@@ -50,11 +52,14 @@ eating_df = pd.merge(df_suiciderates, eating_df, left_on='Location', right_on='E
 drug_df = pd.merge(df_suiciderates, drug_df, left_on='Location', right_on='Entity').iloc[:, [0] + list(range(21, 41))]
 alcohol_df = pd.merge(df_suiciderates, alcohol_df, left_on='Location', right_on='Entity').iloc[:, [0] + list(range(21, 41))]
 
-schizo_df.to_csv('Cleaned_Schizophrenia_Prevalence.csv')
-depression_df.to_csv('Cleaned_Depression_Prevalence.csv')
-anxiety_df.to_csv('Cleaned_Anxiety_Prevalence.csv')
-bipolar_df.to_csv('Cleaned_Bipolar_Prevalence.csv')
-eating_df.to_csv('Cleaned_Eating_Disorder_Prevalence.csv')
-drug_df.to_csv('Cleaned_Drug_Use_Disorder_Prevalence.csv')
-alcohol_df.to_csv('Cleaned_Alcohol_Use_Disorder_Prevalence.csv')
+os.chdir("./cleaned/")
 
+schizo_df.to_csv('Schizophrenia_Prevalence.csv')
+depression_df.to_csv('Depression_Prevalence.csv')
+anxiety_df.to_csv('Anxiety_Prevalence.csv')
+bipolar_df.to_csv('Bipolar_Prevalence.csv')
+eating_df.to_csv('Eating_Disorder_Prevalence.csv')
+drug_df.to_csv('Drug_Use_Disorder_Prevalence.csv')
+alcohol_df.to_csv('Alcohol_Use_Disorder_Prevalence.csv')
+
+os.chdir("./../..")

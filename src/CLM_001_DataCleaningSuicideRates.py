@@ -6,6 +6,8 @@ Created on Tue Jan  9 13:37:57 2024
 """
 
 import pandas as pd
+import os
+os.chdir("./dat/")
 
 # Load the suicide rate dataset
 data = pd.read_csv('../dat/Age-Standardized-Suicide-Rate-Data.csv')
@@ -17,10 +19,8 @@ new_dataset_both = data[data['Dim1'] == 'Both sexes'].pivot_table(index='Locatio
 new_dataset_male = data[data['Dim1'] == 'Male'].pivot_table(index='Location', columns='Period', values='FactValueNumeric')
 new_dataset_female = data[data['Dim1'] == 'Female'].pivot_table(index='Location', columns='Period', values='FactValueNumeric')
 
-# Display the new dataset
-print('Cleaned dataset of suicide rates for both sexes \n')
-print(new_dataset_both)
-print('Cleaned dataset of suicide rates for males \n')
-print(new_dataset_male)
-print('Cleaned dataset of suicide rates for females \n')
-print(new_dataset_female)
+os.chdir("./cleaned/")
+
+new_dataset_both.to_csv('Both-Sexes-Age-Standardized-Suicide-Rates.csv')
+
+os.chdir("./../..")
