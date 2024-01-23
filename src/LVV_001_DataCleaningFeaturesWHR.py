@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-df = pd.read_excel('./dat/DataForTable2.1WHR2023.xls')
+df = pd.read_csv('./dat/DataForTable2.1WHR2023.csv')
 
 # Make a list of countries in the data base
 countries_col = df["Country name"]
