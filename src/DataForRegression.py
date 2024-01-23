@@ -36,7 +36,7 @@ df_mental = [df_suicide_rates, df_schizo.iloc[:, 1:], df_depression.iloc[:, 1:],
 
 # =============================================================================
 # FILL NAN VALUES USING AN IMPUTER IN HAPPINESS SCORE DATAFRAMES
-# ===============================================, ==============================
+# =============================================================================
 # Create a list to store the modified DataFrames
 df_happiness_filled = []
 
@@ -117,6 +117,7 @@ common_countries_2 = set(df_mental_filtered[0]["Location"])
 
 # Find the intersection of common countries
 common_countries = sorted(list(common_countries_1.intersection(common_countries_2)))
+# common_countries = ["Germany"]
 
 # Filter DataFrames in the first list based on common years and countries
 final_df_happiness = [df[df["Unnamed: 0"].isin(common_countries)][common_years] for df in df_happiness_filtered]
@@ -145,6 +146,7 @@ np.random.seed(42)
 
 # Create a 162x20 array of random numbers between 0 and 1
 random_array = np.random.rand(113, 15)
+# random_array = np.random.rand(1, 15)
 
 # =============================================================================
 # PREPARE DATA FOR THE REGRESSION MODEL FORMAT
@@ -166,5 +168,6 @@ for i, data_flat in enumerate(independent_data, 1):
     data[feature_names[i-1]] = data_flat
 
 data.to_csv('data_for_regression.csv')
+# data.to_csv('data_for_regression_Germany.csv')
 
 os.chdir("../../")

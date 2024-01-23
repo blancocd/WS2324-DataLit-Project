@@ -16,6 +16,7 @@ from sklearn.linear_model import Ridge
 import numpy as np
 
 data = pd.read_csv("../dat/cleaned/data_for_regression.csv")
+data.drop(columns=['Unnamed: 0'], inplace=True)
 feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
                  "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
                  "Alcohol Abuse Disorder", "Random Data"]
