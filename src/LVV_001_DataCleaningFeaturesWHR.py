@@ -1,5 +1,4 @@
 import pandas as pd
-import os
 
 def cleaningFeaturesWHR():
     df = pd.read_csv('./dat/DataForTable2.1WHR2023.csv')

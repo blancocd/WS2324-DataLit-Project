@@ -6,7 +6,6 @@ Created on Tue Jan  9 13:37:57 2024
 """
 
 import pandas as pd
-import os
 
 def cleaningSuicideRate():
     # Load the suicide rate dataset

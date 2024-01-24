@@ -6,7 +6,6 @@ Created on Wed Jan 10 16:07:20 2024
 """
 
 import pandas as pd
-import os
 
 def cleaningMentalSubstanceDisorders():
     # Read the CSV file into a pandas DataFrame
