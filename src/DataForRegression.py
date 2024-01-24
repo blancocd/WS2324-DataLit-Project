@@ -11,7 +11,10 @@ import numpy as np
 # LOAD THE CSV FILES AS DATAFRAMES
 # =============================================================================
 
-def dataForRegression():
+# listCountries contains the names of the countries that we wish to do the regression on
+# as a list of strings
+# default is None which includes all countries
+def dataForRegression(listCountries = None):
         # Read the CSV files into a pandas DataFrame
         df_suicide_rates = pd.read_csv('./dat/cleaned/Both-Sexes-Age-Standardized-Suicide-Rates.csv')
         df_schizo = pd.read_csv('./dat/cleaned/Schizophrenia_Prevalence.csv')
@@ -115,7 +118,9 @@ def dataForRegression():
 
         # Find the intersection of common countries
         common_countries = sorted(list(common_countries_1.intersection(common_countries_2)))
-        # common_countries = ["Germany"]
+        
+        if listCountries != None:
+            common_countries = listCountries
 
         # Filter DataFrames in the first list based on common years and countries
         final_df_happiness = [df[df["Unnamed: 0"].isin(common_countries)][common_years] for df in df_happiness_filtered]
@@ -143,8 +148,7 @@ def dataForRegression():
         np.random.seed(42)
 
         # Create a 162x20 array of random numbers between 0 and 1
-        random_array = np.random.rand(113, 15)
-        # random_array = np.random.rand(1, 15)
+        random_array = np.random.rand(len(common_countries), 15)
 
         # =============================================================================
         # PREPARE DATA FOR THE REGRESSION MODEL FORMAT
@@ -165,6 +169,9 @@ def dataForRegression():
         for i, data_flat in enumerate(independent_data, 1):
             data[feature_names[i-1]] = data_flat
 
-        data.to_csv('./dat/cleaned/data_for_regression.csv')
-        # data.to_csv('data_for_regression_Germany.csv')
-
+        identifier = ""
+        if listCountries != None:
+            identifier = "_"
+            for country in listCountries[:min(3,len(listCountries))]:
+                identifier = identifier+country[:2]
+        data.to_csv('./dat/cleaned/data_for_regression'+identifier+'.csv')

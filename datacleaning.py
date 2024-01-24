@@ -15,3 +15,5 @@ cleaningSuicideRate ()
 cleaningMentalSubstanceDisorders()
 cleaningFeaturesWHR()
 dataForRegression()
+dataForRegression(["Germany"])
+
