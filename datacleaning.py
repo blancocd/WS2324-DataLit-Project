@@ -11,7 +11,7 @@ from src.CLM_001_DataCleaningMentalSubstanceDisorders import cleaningMentalSubst
 from src.LVV_001_DataCleaningFeaturesWHR import cleaningFeaturesWHR
 from src.DataForRegression import dataForRegression
 
-cleaningSuicideRate ()
+cleaningSuicideRate()
 cleaningMentalSubstanceDisorders()
 cleaningFeaturesWHR()
 
