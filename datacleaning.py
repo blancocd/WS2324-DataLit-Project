@@ -14,6 +14,19 @@ from src.DataForRegression import dataForRegression
 cleaningSuicideRate ()
 cleaningMentalSubstanceDisorders()
 cleaningFeaturesWHR()
+
+developed = ['Switzerland','Ireland','Iceland','Germany','Sweden','Australia','Netherlands','Denmark','Singapore','Finland',
+             'Belgium','New Zealand','Canada','Austria','Japan','Israel','Slovenia','Luxembourg','Spain','France']
+
+central_europe = ['Austria', 'Croatia', 'Czechia', 'Germany', 'Hungary', 'Lithuania', 'Poland', 'Slovakia', 'Slovenia', 'Switzerland']
+
+europe = ['Luxembourg', 'Portugal', 'Ireland', 'Poland', 'Spain', 'Serbia', 'Austria', 'Denmark', 'Hungary', 'Bulgaria', 'Sweden',
+           'Ukraine', 'Greece', 'Slovakia', 'Romania', 'Finland', 'Latvia', 'Malta', 'Lithuania', 'Norway', 'Netherlands', 'Albania',
+            'Germany', 'Italy', 'Croatia', 'Bosnia and Herzegovina', 'France', 'Slovenia', 'Montenegro', 'Estonia', 'Belarus', 
+            'Iceland', 'Switzerland', 'Czechia', 'Belgium']
+
 dataForRegression()
 dataForRegression(["Germany"])
-
+dataForRegression(developed)
+dataForRegression(central_europe)
+dataForRegression(europe)
