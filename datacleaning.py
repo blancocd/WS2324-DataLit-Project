@@ -25,8 +25,10 @@ europe = ['Luxembourg', 'Portugal', 'Ireland', 'Poland', 'Spain', 'Serbia', 'Aus
             'Germany', 'Italy', 'Croatia', 'Bosnia and Herzegovina', 'France', 'Slovenia', 'Montenegro', 'Estonia', 'Belarus', 
             'Iceland', 'Switzerland', 'Czechia', 'Belgium']
 
+# Here we mix the datapoints and select the subset of countries that are to be included
+# The default set is all countries (that were surveyed)
 dataForRegression()
-dataForRegression(["Germany"])
-dataForRegression(developed)
-dataForRegression(central_europe)
-dataForRegression(europe)
+dataForRegression(["Germany"])      # data_for_regression_Ge.csv
+dataForRegression(developed)        # data_for_regression_SwIrIc.csv
+dataForRegression(central_europe)   # data_for_regression_AuCrCz.csv
+dataForRegression(europe)           # data_for_regression_LuPoIr.csv
