@@ -9,7 +9,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from tueplots import bundles
+from tueplots.constants.color import palettes
+import numpy as np
 
+# =============================================================================
+# FIRST PLOT: SELECTED FEATURE COMPARISON
+# =============================================================================
 data_general = pd.read_csv("../dat/general_regression_output.csv").T
 data_europe = pd.read_csv("../dat/europe_regression_output.csv").T
 data_developed = pd.read_csv("../dat/developed_regression_output.csv").T
@@ -51,7 +56,7 @@ def percentage_formatter(x, pos):
 
 with plt.rc_context({**bundles.icml2022()}):
     fig, ax = plt.subplots(figsize = (7,3))
-    selected_data.T.plot(kind="bar", stacked=False, ax=ax)
+    selected_data.T.plot(kind="bar", stacked=False, ax=ax, color = palettes.tue_plot)
     ax.set_title("Impact of Selected Features on the Happiness Score")
     ax.set_ylabel("Explained Percentage")
     ax.legend(title="Features", loc = 'upper right')
@@ -63,5 +68,78 @@ with plt.rc_context({**bundles.icml2022()}):
    
     # Save the plot as PDF
     plt.savefig("FeatureImportanceComparison.pdf")
+    # Show the plot
+    plt.show()
+    
+    
+# =============================================================================
+# SECOND PLOT: REGRESSION MODEL RESULTS COMPARED
+# =============================================================================
+developed_europe = ['Switzerland','Ireland','Iceland','Germany','Sweden','Australia','Netherlands','Denmark','Singapore','Finland',
+             'Belgium','New Zealand','Canada','Austria','Japan','Israel','Slovenia','Luxembourg','Spain','France']
+
+central_europe = ['Austria', 'Croatia', 'Czechia', 'Germany', 'Hungary', 'Lithuania', 'Poland', 'Slovakia', 'Slovenia', 'Switzerland']
+
+europe = ['Luxembourg', 'Portugal', 'Ireland', 'Poland', 'Spain', 'Serbia', 'Austria', 'Denmark', 'Hungary', 'Bulgaria', 'Sweden',
+           'Ukraine', 'Greece', 'Slovakia', 'Romania', 'Finland', 'Latvia', 'Malta', 'Lithuania', 'Norway', 'Netherlands', 'Albania',
+            'Germany', 'Italy', 'Croatia', 'Bosnia and Herzegovina', 'France', 'Slovenia', 'Montenegro', 'Estonia', 'Belarus', 
+            'Iceland', 'Switzerland', 'Czechia', 'Belgium']
+
+happiness_score = pd.read_csv("../dat/cleaned/Life_Ladder.csv")
+happiness_score.set_index('Unnamed: 0', inplace=True)
+
+# Function to calculate the mean score for a given set of countries in 2019
+def calculate_mean_score(df, countries):
+    if "World" in countries:
+        return df["2019"].mean()  # Calculate mean score for all countries in 2019
+    else:
+        filtered_df = df.loc[countries, "2019"]
+        return filtered_df.mean(skipna=True)
+
+# List of sets of countries
+sets_of_countries = {"World": ["World"], "Europe": europe, "Developed Europe": developed_europe, "Central Europe": central_europe, "Germany": ["Germany"]}
+mean_score = []
+
+# Calculate the mean score for each set of countries in 2019 and store in a dictionary with custom labels
+mean_scores = {}
+for label, countries in sets_of_countries.items():
+    mean_score = calculate_mean_score(happiness_score, countries)
+    mean_scores[label] = mean_score
+
+# Convert the mean_scores dictionary to a DataFrame
+mean_scores_df = pd.DataFrame.from_dict(mean_scores, orient='index', columns=['Happiness Score'])
+
+print("DataFrame of mean scores for each set of countries:")
+print(mean_scores_df)
+
+all_data.set_index('Feature Names', inplace=True)
+
+# Combine the two DataFrames
+combined_df = all_data.T.merge(mean_scores_df, left_index=True, right_index=True)
+# Round the values in the combined_df DataFrame to 4 decimal places
+combined_df = combined_df.round(4)
+
+# Plotting with rc_context
+with plt.rc_context({**bundles.icml2022()}):
+    fig, ax = plt.subplots(figsize=(7, 3))
+
+    for i, region in enumerate(combined_df.index):
+        feature_importances = combined_df.loc[region, combined_df.columns[:-1]].astype(float)  # Convert to float
+        happiness_score = combined_df.loc[region, 'Happiness Score']
+        left_positions = np.cumsum([0] + feature_importances.tolist())[:-1]  # Calculate left positions for each feature
+        ax.barh(region, happiness_score, color='lightblue', zorder=2)
+        ax.barh(region, feature_importances, left=left_positions, color=palettes.tue_plot, zorder=1)
+
+    # Adding labels and legend
+    ax.set_title("Impact of Selected Features on the Happiness Score")
+    ax.set_xlabel("Happiness Score")
+
+    # Create a custom legend without including "Happiness Score"
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles[1:], labels[1:], title="Features", loc='upper right')
+
+    # Save the plot as PDF
+    plt.savefig("StackedFeatureImportance.pdf")
+
     # Show the plot
     plt.show()
