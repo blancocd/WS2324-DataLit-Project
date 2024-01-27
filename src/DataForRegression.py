@@ -14,7 +14,7 @@ import numpy as np
 # listCountries contains the names of the countries that we wish to do the regression on
 # as a list of strings
 # default is None which includes all countries
-def dataForRegression(listCountries = None):
+def dataForRegression(filename=None, listCountries = None):
         # Read the CSV files into a pandas DataFrame
         df_suicide_rates = pd.read_csv('./dat/cleaned/Both-Sexes-Age-Standardized-Suicide-Rates.csv')
         df_schizo = pd.read_csv('./dat/cleaned/Schizophrenia_Prevalence.csv')
@@ -174,4 +174,8 @@ def dataForRegression(listCountries = None):
             identifier = "_"
             for country in listCountries[:min(3,len(listCountries))]:
                 identifier = identifier+country[:2]
-        data.to_csv('./dat/cleaned/data_for_regression'+identifier+'.csv')
+
+        if filename == None:
+            data.to_csv('./dat/cleaned/data_for_regression'+identifier+'.csv')
+        else:
+            data.to_csv(filename)
