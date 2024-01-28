@@ -110,3 +110,9 @@ def scatter(prevalence="Eating_Disorder", more_countries = False):
     legend2 = ax.legend(*scatter.legend_elements(**kw),loc="upper left", title="Prevalence of\n"+prevalence.replace('_',' '))
 
     plt.savefig("scatter_happiness_gdp_"+prevalence+"_"+str(int(more_countries))+".pdf")
+
+if __name__ == "__main__":
+    prevalences = ['Eating_Disorder', 'Drug_Use_Disorder','Depression','Schizophrenia','Anxiety','Bipolar_Disorder','Alcohol_Use_Disorder']
+    for prevalence in prevalences:
+        for more_countries in [True, False]:
+            scatter(prevalence=prevalence, more_countries=more_countries)

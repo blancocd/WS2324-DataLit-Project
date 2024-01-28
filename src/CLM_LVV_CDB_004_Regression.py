@@ -104,7 +104,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Regression on the happiness and mental health datasets')
     parser.add_argument('--filename', type=str, default='data_for_regression.csv',
                         help='filename of the csv data for regression, see datacleaning.py')
-    parser.add_argument('--alpha', type=float, default=0.2,
+    parser.add_argument('--alpha', type=float, default=0.02,
                         help='alpha for lasso and ridge regression')
     args = parser.parse_args()
     regression("data_for_regression.csv", args.alpha)
