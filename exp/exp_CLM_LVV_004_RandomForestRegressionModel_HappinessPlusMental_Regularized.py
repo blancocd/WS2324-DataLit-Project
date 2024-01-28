@@ -19,9 +19,9 @@ import argparse
 def regression(filename="data_for_regression.csv", alpha=0.2):
     data = pd.read_csv("../dat/input_regression/"+filename)
     data.drop(columns=['Unnamed: 0'], inplace=True)
-    feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
-                    "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
-                    "Alcohol Abuse Disorder", "Random Data"]
+    sorted_mental = ["Eating Disorder", "Drug Abuse Disorder", "Bipolar Disorder", "Schizophrenia", "Anxiety", "Alcohol Abuse Disorder", "Depression", "Suicide Rates", "Random Data"]
+    sorted_whr = ["Log GDP per capita", "Social Support" , "Freedom of Choice", "Corruption", "Generosity"]
+    feature_names = sorted_whr+sorted_mental
 
     # Split the dataset into features (X) and the target variable (y)
     X = data.drop("Happiness Score", axis=1)
@@ -107,4 +107,8 @@ if __name__ == "__main__":
     parser.add_argument('--alpha', type=float, default=0.2,
                         help='alpha for lasso and ridge regression')
     args = parser.parse_args()
-    regression(args.filename, args.alpha)
+    regression("data_for_regression.csv", args.alpha)
+    regression("data_for_regression_central_europe.csv", args.alpha)
+    regression("data_for_regression_developed.csv", args.alpha)
+    regression("data_for_regression_europe.csv", args.alpha)
+    regression("data_for_regression_germany.csv", args.alpha)

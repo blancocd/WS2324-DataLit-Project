@@ -20,9 +20,12 @@ data_europe = pd.read_csv("../dat/features/regression_europe.csv")["Random Fores
 data_developed = pd.read_csv("../dat/features/regression_developed.csv")["Random Forest"][:-1]
 data_centraleurope = pd.read_csv("../dat/features/regression_central_europe.csv")["Random Forest"][:-1]
 data_germany = pd.read_csv("../dat/features/regression_germany.csv")["Random Forest"][:-1]
-feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
-                 "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
-                 "Alcohol Abuse Disorder", "Random Data"]
+
+# Will have the corresponding colors to the palettes.tue_plot array, so that the last 4 are the same as the first 4 
+# But the last 4 are not used with the first 4 in the first plot!
+sorted_mental = ["Eating Disorder", "Drug Abuse Disorder", "Bipolar Disorder", "Schizophrenia", "Anxiety", "Alcohol Abuse Disorder", "Depression", "Suicide Rates", "Random Data"]
+sorted_whr = ["Log GDP per capita", "Social Support" , "Freedom of Choice", "Corruption", "Generosity"]
+feature_names = sorted_whr+sorted_mental
 
 # Create a DataFrame for feature_names
 feature_names_df = pd.DataFrame({"Feature Names": feature_names})
@@ -39,7 +42,7 @@ all_data = pd.concat([feature_names_df, data_general, data_developed, data_europ
 
 # Select the specific columns for the bar chart
 selected_columns = ["Feature Names", "World", "Developed", "Europe", "Central Europe", "Germany"]
-selected_rows = ["Corruption","GDP","Eating Disorder", "Drug Abuse Disorder"]
+selected_rows = ["Log GDP per capita","Corruption","Eating Disorder", "Drug Abuse Disorder"]
 # Filter the DataFrame to include only selected columns and rows corresponding to feature names
 selected_data = all_data[selected_columns].loc[all_data['Feature Names'].isin(selected_rows)]
 
@@ -53,9 +56,14 @@ selected_data.set_index("Feature Names", inplace=True)
 def percentage_formatter(x, pos):
     return f'{x:.0%}'
 
+mypalette = []
+for feature in selected_rows:
+    index = feature_names.index(feature)
+    mypalette.append(palettes.tue_plot[index])
+
 with plt.rc_context({**bundles.icml2022()}):
     fig, ax = plt.subplots(figsize = (7,3))
-    selected_data.T.plot(kind="bar", stacked=False, ax=ax, color = palettes.tue_plot)
+    selected_data.T.plot(kind="bar", stacked=False, ax=ax, color = mypalette)
     ax.set_title("Impact of Selected Features on the Happiness Score")
     ax.set_ylabel("Explained Percentage")
     ax.legend(title="Features", loc = 'upper right')

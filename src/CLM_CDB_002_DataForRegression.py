@@ -32,8 +32,8 @@ def dataForRegression(filename=None, listCountries = None):
         df_lifeladder = pd.read_csv('./dat/cleaned/Life_Ladder.csv')
         df_socialsup = pd.read_csv('./dat/cleaned/Social_Support.csv')
 
-        df_happiness = [df_lifeladder, df_corruption, df_GDP, df_generosity,df_lifechoices,df_socialsup]
-        df_mental = [df_suicide_rates, df_schizo.iloc[:, 1:], df_depression.iloc[:, 1:], df_anxiety.iloc[:, 1:], df_bipolar.iloc[:, 1:], df_eating.iloc[:, 1:], df_drug.iloc[:, 1:], df_alcohol.iloc[:, 1:]]
+        df_happiness = [df_lifeladder, df_GDP, df_socialsup, df_lifechoices, df_corruption, df_generosity]
+        df_mental = [df_eating.iloc[:, 1:], df_drug.iloc[:, 1:], df_bipolar.iloc[:, 1:], df_schizo.iloc[:, 1:], df_anxiety.iloc[:, 1:], df_alcohol.iloc[:, 1:], df_depression.iloc[:, 1:], df_suicide_rates]
 
         # =============================================================================
         # FILL NAN VALUES USING AN IMPUTER IN HAPPINESS SCORE DATAFRAMES
@@ -161,7 +161,10 @@ def dataForRegression(filename=None, listCountries = None):
 
         independent_data.append(random_array.flatten())
 
-        feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates", "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder", "Alcohol Abuse Disorder", "Random Data"]
+
+        sorted_mental = ["Eating Disorder", "Drug Abuse Disorder", "Bipolar Disorder", "Schizophrenia", "Anxiety", "Alcohol Abuse Disorder", "Depression", "Suicide Rates", "Random Data"]
+        sorted_whr = ["Log GDP per capita", "Social Support" , "Freedom of Choice", "Corruption", "Generosity"]
+        feature_names = sorted_whr+sorted_mental
 
         # Create a DataFrame with all the data
         data = pd.DataFrame({"Happiness Score": target})
