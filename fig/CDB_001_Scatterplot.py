@@ -72,7 +72,7 @@ def scatter(prevalence="Eating_Disorder", more_countries = False):
     mpl.rcParams.update({'font.size': 5})
 
     classes = ["Asia","Europe","Africa","North America","South America","Oceania", "Germany"]
-    colors = ListedColormap(["tab:gray","tab:orange","tab:green","tab:purple","tab:cyan", "tab:blue", "w"])
+    colors = ListedColormap(["tab:gray","tab:orange","tab:green","tab:purple","tab:cyan", "tab:blue", "k"])
 
     fig, ax = plt.subplots()
     s, slope, bias =linear_inc(s,5,40)
@@ -109,10 +109,10 @@ def scatter(prevalence="Eating_Disorder", more_countries = False):
     kw = dict(prop="sizes", num=3, alpha=0.6, fmt="{x:.2f}\%", func=lambda s: (s-bias)/slope)
     legend2 = ax.legend(*scatter.legend_elements(**kw),loc="upper left", title="Prevalence of\n"+prevalence.replace('_',' '))
 
-    plt.savefig("scatter_happiness_gdp_"+prevalence+"_"+str(int(more_countries))+".pdf")
+    plt.savefig("scatter_happiness_gdp_"+prevalence+".pdf")
 
 if __name__ == "__main__":
     prevalences = ['Eating_Disorder', 'Drug_Use_Disorder','Depression','Schizophrenia','Anxiety','Bipolar_Disorder','Alcohol_Use_Disorder']
     for prevalence in prevalences:
-        for more_countries in [True, False]:
-            scatter(prevalence=prevalence, more_countries=more_countries)
+        # for more_countries in [True, False]:
+        scatter(prevalence=prevalence)
