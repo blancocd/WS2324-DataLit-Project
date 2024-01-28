@@ -4,7 +4,7 @@ Created on Wed Jan 17 20:19:56 2024
 
 @author: Carla and Luciana
 """
-
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
@@ -16,8 +16,8 @@ from sklearn.linear_model import Ridge
 import numpy as np
 import argparse
 
-def regression(filename="data_for_regression.csv", alpha=0.1):
-    data = pd.read_csv("../dat/cleaned/"+filename)
+def regression(filename="data_for_regression.csv", alpha=0.2):
+    data = pd.read_csv("../dat/input_regression/"+filename)
     data.drop(columns=['Unnamed: 0'], inplace=True)
     feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
                     "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
@@ -94,13 +94,17 @@ def regression(filename="data_for_regression.csv", alpha=0.1):
           'Ridge': np.hstack((feature_importance_RM,mse_RM.reshape(1,)))}
     df = pd.DataFrame(data=dict_for_df)
     df.set_index('Feature Names', inplace=True)
-    df.to_csv('../dat/cleaned/'+str(alpha)+'_'+filename[9:-4]+'_features.csv')
+
+    if not (os.path.exists("../dat/features/")):
+        os.mkdir("../dat/features")
+
+    df.to_csv('../dat/features/'+filename[9:-4]+'.csv')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Regression on the happiness and mental health datasets')
     parser.add_argument('--filename', type=str, default='data_for_regression.csv',
                         help='filename of the csv data for regression, see datacleaning.py')
-    parser.add_argument('--alpha', type=int, default=0.1,
+    parser.add_argument('--alpha', type=float, default=0.2,
                         help='alpha for lasso and ridge regression')
     args = parser.parse_args()
     regression(args.filename, args.alpha)

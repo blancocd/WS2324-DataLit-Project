@@ -15,12 +15,11 @@ import numpy as np
 # =============================================================================
 # FIRST PLOT: SELECTED FEATURE COMPARISON
 # =============================================================================
-data_general = pd.read_csv("../dat/cleaned/general_regression_output.csv").T
-data_europe = pd.read_csv("../dat/cleaned/europe_regression_output.csv").T
-data_developed = pd.read_csv("../dat/cleaned/developed_regression_output.csv").T
-data_centraleurope = pd.read_csv("../dat/cleaned/centraleurope_regression_output.csv").T
-data_germany = pd.read_csv("../dat/cleaned/germany_regression_output.csv").T
-
+data_general = pd.read_csv("../dat/features/regression.csv")["Random Forest"][:-1]
+data_europe = pd.read_csv("../dat/features/regression_europe.csv")["Random Forest"][:-1]
+data_developed = pd.read_csv("../dat/features/regression_developed.csv")["Random Forest"][:-1]
+data_centraleurope = pd.read_csv("../dat/features/regression_central_europe.csv")["Random Forest"][:-1]
+data_germany = pd.read_csv("../dat/features/regression_germany.csv")["Random Forest"][:-1]
 feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
                  "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
                  "Alcohol Abuse Disorder", "Random Data"]
@@ -29,17 +28,17 @@ feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social
 feature_names_df = pd.DataFrame({"Feature Names": feature_names})
 
 # Reset index for each DataFrame and set the custom column name
-data_general = data_general.reset_index().rename(columns={"index": "World"})
-data_europe = data_europe.reset_index().rename(columns={"index": "Europe"})
-data_developed = data_developed.reset_index().rename(columns={"index": "Developed"})
-data_centraleurope = data_centraleurope.reset_index().rename(columns={"index": "Central Europe"})
-data_germany = data_germany.reset_index().rename(columns={"index": "Germany"})
+data_general = data_general.reset_index().rename(columns={"Random Forest": "World"})
+data_developed = data_developed.reset_index().rename(columns={"Random Forest": "Developed"})
+data_europe = data_europe.reset_index().rename(columns={"Random Forest": "Europe"})
+data_centraleurope = data_centraleurope.reset_index().rename(columns={"Random Forest": "Central Europe"})
+data_germany = data_germany.reset_index().rename(columns={"Random Forest": "Germany"})
 
 # Concatenate the DataFrames along columns
-all_data = pd.concat([feature_names_df, data_general, data_europe, data_developed, data_centraleurope, data_germany], axis=1)
+all_data = pd.concat([feature_names_df, data_general, data_developed, data_europe, data_centraleurope, data_germany], axis=1)
 
 # Select the specific columns for the bar chart
-selected_columns = ["Feature Names", "World", "Europe", "Developed", "Central Europe", "Germany"]
+selected_columns = ["Feature Names", "World", "Developed", "Europe", "Central Europe", "Germany"]
 selected_rows = ["Corruption","GDP","Eating Disorder", "Drug Abuse Disorder"]
 # Filter the DataFrame to include only selected columns and rows corresponding to feature names
 selected_data = all_data[selected_columns].loc[all_data['Feature Names'].isin(selected_rows)]
@@ -94,7 +93,7 @@ def calculate_mean_score(df, countries):
         return filtered_df.mean(skipna=True)
 
 # List of sets of countries
-sets_of_countries = {"World": ["World"], "Europe": europe, "Developed": developed, "Central Europe": central_europe, "Germany": ["Germany"]}
+sets_of_countries = {"World": ["World"], "Developed": developed, "Europe": europe, "Central Europe": central_europe, "Germany": ["Germany"]}
 mean_score = []
 
 # Calculate the mean score for each set of countries in 2019 and store in a dictionary with custom labels
@@ -106,8 +105,8 @@ for label, countries in sets_of_countries.items():
 # Convert the mean_scores dictionary to a DataFrame
 mean_scores_df = pd.DataFrame.from_dict(mean_scores, orient='index', columns=['Happiness Score'])
 
-print("DataFrame of mean scores for each set of countries:")
-print(mean_scores_df)
+# print("DataFrame of mean scores for each set of countries:")
+# print(mean_scores_df)
 
 all_data.set_index('Feature Names', inplace=True)
 
@@ -117,10 +116,12 @@ combined_df = all_data.T.merge(mean_scores_df, left_index=True, right_index=True
 combined_df = combined_df.round(4)
 
 # Plotting with rc_context
+regions = ["Germany", "Central Europe", "Europe", "Developed", "World"]
 with plt.rc_context({**bundles.icml2022()}):
     fig, ax = plt.subplots(figsize=(7, 3))
 
-    for i, region in enumerate(combined_df.index):
+    for i in range(len(regions)):
+        region = regions[i]
         feature_importances = combined_df.loc[region, combined_df.columns[:-1]].astype(float)  # Convert to float
         happiness_score = combined_df.loc[region, 'Happiness Score']
         left_positions = np.cumsum([0] + feature_importances.tolist())[:-1]  # Calculate left positions for each feature
@@ -139,7 +140,6 @@ with plt.rc_context({**bundles.icml2022()}):
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, title="Features", loc='upper center', 
               bbox_to_anchor=(0.5, -0.15),ncol=7, fancybox=True, shadow=True)
-
 
     # Save the plot as PDF
     plt.savefig("StackedFeatureImportance.pdf")

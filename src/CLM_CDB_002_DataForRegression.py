@@ -176,6 +176,6 @@ def dataForRegression(filename=None, listCountries = None):
                 identifier = identifier+country[:2]
 
         if filename == None:
-            data.to_csv('./dat/cleaned/data_for_regression'+identifier+'.csv')
+            data.to_csv('./dat/input_regression/data_for_regression'+identifier+'.csv')
         else:
-            data.to_csv('./dat/cleaned/'+filename)
+            data.to_csv('./dat/input_regression/'+filename)

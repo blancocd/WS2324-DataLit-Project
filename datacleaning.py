@@ -25,6 +25,9 @@ europe = ['Luxembourg', 'Portugal', 'Ireland', 'Poland', 'Spain', 'Serbia', 'Aus
             'Germany', 'Italy', 'Croatia', 'Bosnia and Herzegovina', 'France', 'Slovenia', 'Montenegro', 'Estonia', 'Belarus', 
             'Iceland', 'Switzerland', 'Czechia', 'Belgium']
 
+if not (os.path.exists("./dat/input_regression/")):
+    os.mkdir("./dat/input_regression")
+
 # Here we mix the datapoints and select the subset of countries that are to be included
 # The default set is all countries (that were surveyed)
 dataForRegression()
