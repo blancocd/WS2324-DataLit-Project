@@ -9,7 +9,7 @@ if not (os.path.exists("./dat/cleaned/")):
 from src.CLM_001_DataCleaningSuicideRates import cleaningSuicideRate
 from src.CLM_001_DataCleaningMentalSubstanceDisorders import cleaningMentalSubstanceDisorders
 from src.LVV_001_DataCleaningFeaturesWHR import cleaningFeaturesWHR
-from src.DataForRegression import dataForRegression
+from src.CLM_CDB_002_DataForRegression import dataForRegression
 
 cleaningSuicideRate()
 cleaningMentalSubstanceDisorders()

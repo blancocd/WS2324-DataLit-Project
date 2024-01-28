@@ -14,83 +14,93 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
 import numpy as np
+import argparse
 
-data = pd.read_csv("../dat/cleaned/data_for_regression.csv")
-data.drop(columns=['Unnamed: 0'], inplace=True)
-feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
-                 "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
-                 "Alcohol Abuse Disorder", "Random Data"]
+def regression(filename="data_for_regression.csv", alpha=0.1):
+    data = pd.read_csv("../dat/cleaned/"+filename)
+    data.drop(columns=['Unnamed: 0'], inplace=True)
+    feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
+                    "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
+                    "Alcohol Abuse Disorder", "Random Data"]
 
-# Split the dataset into features (X) and the target variable (y)
-X = data.drop("Happiness Score", axis=1)
-y = data["Happiness Score"]
+    # Split the dataset into features (X) and the target variable (y)
+    X = data.drop("Happiness Score", axis=1)
+    y = data["Happiness Score"]
 
-# Split the dataset into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Split the dataset into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random_state=42)
 
+    # =============================================================================
+    # APPLY REGRESSION MODEL AND DISPLAY RESULTS
+    # =============================================================================
+    # Create a Random Forest Regressor
+    rf_model = RandomForestRegressor(max_depth=None, n_estimators=3000, max_features='sqrt', min_samples_leaf=1,
+                                    min_samples_split=2)
 
-# =============================================================================
-# APPLY REGRESSION MODEL AND DISPLAY RESULTS
-# =============================================================================
-# Create a Random Forest Regressor
-rf_model = RandomForestRegressor(max_depth=None, n_estimators=3000, max_features='sqrt', min_samples_leaf=1,
-                                 min_samples_split=2)
+    # Fit the model on the training data
+    rf_model.fit(X_train, y_train)
 
-# Fit the model on the training data
-rf_model.fit(X_train, y_train)
+    # Make predictions on the test data
+    y_pred = rf_model.predict(X_test)
 
-# Make predictions on the test data
-y_pred = rf_model.predict(X_test)
+    # Evaluate the model
+    mse_RF = mean_squared_error(y_test, y_pred)
+    
+    # Inspect feature importance
+    feature_importance_RF = rf_model.feature_importances_
 
-# Evaluate the model
-mse = mean_squared_error(y_test, y_pred)
-print(f"Mean Squared Error: {mse:.3f}")
+    # =============================================================================
+    # L1 Regularization - Lasso
+    # =============================================================================
+    scaler = StandardScaler()
+    X_train, X_test = scaler.fit_transform(X_train), scaler.fit_transform(X_test)
+    # Create a Lasso model
+    lasso_model = Lasso(alpha=alpha)  # Adjust the alpha parameter for regularization strength
 
-# Inspect feature importance
-feature_importance = rf_model.feature_importances_
-print("Feature Importance:")
-for i, (feature, importance) in enumerate(zip(feature_names, feature_importance)):
-    print(f"{feature}: {importance:.3f}")
+    # Fit the model to the data
+    lasso_model.fit(X_train, y_train)
 
+    # Make predictions on the test data
+    y_pred = lasso_model.predict(X_test)
 
-# =============================================================================
-# L1 Regularization - Lasso
-# =============================================================================
+    # Evaluate the model
+    mse_LS = mean_squared_error(y_test, y_pred)
 
-scaler = StandardScaler()
-# Extract features and target variable
-X = data.drop(columns=['Happiness Score'])
-X_scaled = scaler.fit_transform(X)  # standardize the features
-y = data['Happiness Score']
+    # Print the coefficients of the model
+    feature_importance_LS = lasso_model.coef_
 
-# Create a Lasso model
-lasso_model = Lasso(alpha=0.1)  # Adjust the alpha parameter for regularization strength
+    # =============================================================================
+    # L2 Regularization - Ridge regression
+    # =============================================================================
 
-# Fit the model to the data
-lasso_model.fit(X_scaled, y)
+    # Create a Ridge model
+    ridge_model = Ridge(alpha=alpha)  # Adjust the alpha parameter for regularization strength
 
-# Print the coefficients of the model
-coefficients = pd.Series(lasso_model.coef_, index=X.columns)
-print("\n\n****  Lasso Coefficients  ****")
+    # Fit the model to the data
+    ridge_model.fit(X_train, y_train)
 
+    # Make predictions on the test data
+    y_pred = ridge_model.predict(X_test)
 
-for feature, coef in list(zip(feature_names, lasso_model.coef_)):
-    print(f"{feature}: {coef:.15f}")
+    # Evaluate the model
+    mse_RM = mean_squared_error(y_test, y_pred)
 
-# =============================================================================
-# L2 Regularization - Ridge regression
-# =============================================================================
+    # Print the coefficients of the model
+    feature_importance_RM = ridge_model.coef_
 
-# Create a Ridge model
-ridge_model = Ridge(alpha=1)  # Adjust the alpha parameter for regularization strength
+    dict_for_df = {'Feature Names': feature_names+['MSE'],
+          'Random Forest': np.hstack((feature_importance_RF,mse_RF.reshape(1,))), 
+          'Lasso': np.hstack((feature_importance_LS,mse_LS.reshape(1,))), 
+          'Ridge': np.hstack((feature_importance_RM,mse_RM.reshape(1,)))}
+    df = pd.DataFrame(data=dict_for_df)
+    df.set_index('Feature Names', inplace=True)
+    df.to_csv('../dat/cleaned/'+str(alpha)+'_'+filename[9:-4]+'_features.csv')
 
-# Fit the model to the standardized data
-ridge_model.fit(X_scaled, y)
-
-# Print the coefficients of the Ridge model
-coefficients_ridge = pd.Series(ridge_model.coef_, index=X.columns)
-print("\n\n****  Ridge Coefficients  ****")
-
-
-for feature, coef in list(zip(feature_names, ridge_model.coef_)):
-    print(f"{feature}: {coef:.15f}")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Regression on the happiness and mental health datasets')
+    parser.add_argument('--filename', type=str, default='data_for_regression.csv',
+                        help='filename of the csv data for regression, see datacleaning.py')
+    parser.add_argument('--alpha', type=int, default=0.1,
+                        help='alpha for lasso and ridge regression')
+    args = parser.parse_args()
+    regression(args.filename, args.alpha)

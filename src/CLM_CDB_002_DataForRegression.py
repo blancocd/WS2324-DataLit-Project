@@ -178,4 +178,4 @@ def dataForRegression(filename=None, listCountries = None):
         if filename == None:
             data.to_csv('./dat/cleaned/data_for_regression'+identifier+'.csv')
         else:
-            data.to_csv(filename)
+            data.to_csv('./dat/cleaned/'+filename)

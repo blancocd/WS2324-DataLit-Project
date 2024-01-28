@@ -54,7 +54,7 @@ def cleaningMentalSubstanceDisorders():
     schizo_df.to_csv('./dat/cleaned/Schizophrenia_Prevalence.csv')
     depression_df.to_csv('./dat/cleaned/Depression_Prevalence.csv')
     anxiety_df.to_csv('./dat/cleaned/Anxiety_Prevalence.csv')
-    bipolar_df.to_csv('./dat/cleaned/Bipolar_Prevalence.csv')
+    bipolar_df.to_csv('./dat/cleaned/Bipolar_Disorder_Prevalence.csv')
     eating_df.to_csv('./dat/cleaned/Eating_Disorder_Prevalence.csv')
     drug_df.to_csv('./dat/cleaned/Drug_Use_Disorder_Prevalence.csv')
     alcohol_df.to_csv('./dat/cleaned/Alcohol_Use_Disorder_Prevalence.csv')

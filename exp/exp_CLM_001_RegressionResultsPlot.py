@@ -15,11 +15,11 @@ import numpy as np
 # =============================================================================
 # FIRST PLOT: SELECTED FEATURE COMPARISON
 # =============================================================================
-data_general = pd.read_csv("../dat/general_regression_output.csv").T
-data_europe = pd.read_csv("../dat/europe_regression_output.csv").T
-data_developed = pd.read_csv("../dat/developed_regression_output.csv").T
-data_centraleurope = pd.read_csv("../dat/centraleurope_regression_output.csv").T
-data_germany = pd.read_csv("../dat/germany_regression_output.csv").T
+data_general = pd.read_csv("../dat/cleaned/general_regression_output.csv").T
+data_europe = pd.read_csv("../dat/cleaned/europe_regression_output.csv").T
+data_developed = pd.read_csv("../dat/cleaned/developed_regression_output.csv").T
+data_centraleurope = pd.read_csv("../dat/cleaned/centraleurope_regression_output.csv").T
+data_germany = pd.read_csv("../dat/cleaned/germany_regression_output.csv").T
 
 feature_names = ["Corruption", "GDP", "Generosity", "Freedom of Choice", "Social Support", "Suicide Rates",
                  "Schizophrenia", "Depression", "Anxiety", "Bipolar Disorder", "Eating Disorder", "Drug Abuse Disorder",
@@ -31,7 +31,7 @@ feature_names_df = pd.DataFrame({"Feature Names": feature_names})
 # Reset index for each DataFrame and set the custom column name
 data_general = data_general.reset_index().rename(columns={"index": "World"})
 data_europe = data_europe.reset_index().rename(columns={"index": "Europe"})
-data_developed = data_developed.reset_index().rename(columns={"index": "Developed Europe"})
+data_developed = data_developed.reset_index().rename(columns={"index": "Developed"})
 data_centraleurope = data_centraleurope.reset_index().rename(columns={"index": "Central Europe"})
 data_germany = data_germany.reset_index().rename(columns={"index": "Germany"})
 
@@ -39,7 +39,7 @@ data_germany = data_germany.reset_index().rename(columns={"index": "Germany"})
 all_data = pd.concat([feature_names_df, data_general, data_europe, data_developed, data_centraleurope, data_germany], axis=1)
 
 # Select the specific columns for the bar chart
-selected_columns = ["Feature Names", "World", "Europe", "Developed Europe", "Central Europe", "Germany"]
+selected_columns = ["Feature Names", "World", "Europe", "Developed", "Central Europe", "Germany"]
 selected_rows = ["Corruption","GDP","Eating Disorder", "Drug Abuse Disorder"]
 # Filter the DataFrame to include only selected columns and rows corresponding to feature names
 selected_data = all_data[selected_columns].loc[all_data['Feature Names'].isin(selected_rows)]
@@ -60,22 +60,19 @@ with plt.rc_context({**bundles.icml2022()}):
     ax.set_title("Impact of Selected Features on the Happiness Score")
     ax.set_ylabel("Explained Percentage")
     ax.legend(title="Features", loc = 'upper right')
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', fontsize=ax.yaxis.label.get_fontsize())
-    # Set x-tick labels with line breaks
-    column_labels = [col.replace(' ', '\n') if ' ' in col else col for col in selected_data.columns]
-    plt.xticks(range(len(selected_data.columns)), column_labels)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center', fontsize=ax.yaxis.label.get_fontsize())
+    # # Set x-tick labels with line breaks
+    # column_labels = [col.replace(' ', '\n') if ' ' in col else col for col in selected_data.columns]
+    # plt.xticks(range(len(selected_data.columns)), column_labels)
     ax.yaxis.set_major_formatter(FuncFormatter(percentage_formatter))
    
     # Save the plot as PDF
     plt.savefig("FeatureImportanceComparison.pdf")
-    # Show the plot
-    plt.show()
-    
     
 # =============================================================================
 # SECOND PLOT: REGRESSION MODEL RESULTS COMPARED
 # =============================================================================
-developed_europe = ['Switzerland','Ireland','Iceland','Germany','Sweden','Australia','Netherlands','Denmark','Singapore','Finland',
+developed = ['Switzerland','Ireland','Iceland','Germany','Sweden','Australia','Netherlands','Denmark','Singapore','Finland',
              'Belgium','New Zealand','Canada','Austria','Japan','Israel','Slovenia','Luxembourg','Spain','France']
 
 central_europe = ['Austria', 'Croatia', 'Czechia', 'Germany', 'Hungary', 'Lithuania', 'Poland', 'Slovakia', 'Slovenia', 'Switzerland']
@@ -97,7 +94,7 @@ def calculate_mean_score(df, countries):
         return filtered_df.mean(skipna=True)
 
 # List of sets of countries
-sets_of_countries = {"World": ["World"], "Europe": europe, "Developed Europe": developed_europe, "Central Europe": central_europe, "Germany": ["Germany"]}
+sets_of_countries = {"World": ["World"], "Europe": europe, "Developed": developed, "Central Europe": central_europe, "Germany": ["Germany"]}
 mean_score = []
 
 # Calculate the mean score for each set of countries in 2019 and store in a dictionary with custom labels
@@ -127,8 +124,12 @@ with plt.rc_context({**bundles.icml2022()}):
         feature_importances = combined_df.loc[region, combined_df.columns[:-1]].astype(float)  # Convert to float
         happiness_score = combined_df.loc[region, 'Happiness Score']
         left_positions = np.cumsum([0] + feature_importances.tolist())[:-1]  # Calculate left positions for each feature
-        ax.barh(region, happiness_score, color='lightblue', zorder=2)
-        ax.barh(region, feature_importances, left=left_positions, color=palettes.tue_plot, zorder=1)
+        if (i==0):
+            ax.barh(region, feature_importances*happiness_score, 
+                left=left_positions*happiness_score, color=palettes.tue_plot, label=feature_names)
+        else:
+            ax.barh(region, feature_importances*happiness_score, 
+                left=left_positions*happiness_score, color=palettes.tue_plot)
 
     # Adding labels and legend
     ax.set_title("Impact of Selected Features on the Happiness Score")
@@ -136,10 +137,9 @@ with plt.rc_context({**bundles.icml2022()}):
 
     # Create a custom legend without including "Happiness Score"
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles[1:], labels[1:], title="Features", loc='upper right')
+    ax.legend(handles, labels, title="Features", loc='upper center', 
+              bbox_to_anchor=(0.5, -0.15),ncol=7, fancybox=True, shadow=True)
+
 
     # Save the plot as PDF
     plt.savefig("StackedFeatureImportance.pdf")
-
-    # Show the plot
-    plt.show()
