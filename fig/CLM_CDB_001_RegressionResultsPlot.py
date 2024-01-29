@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 from tueplots import bundles
-from tueplots.constants.color import palettes
+# from tueplots.constants.color import palettes
 import numpy as np
 
 # =============================================================================
@@ -65,9 +65,16 @@ def bar_plots(regression_model):
             return f'{x:.0%}'
 
         mypalette = []
+        # Define a list of distinct colors manually
+        custom_palette = [
+            "#17becf", "#aec7e8", "#ffbb78","#ff9896", "#98df8a", 
+            "#9467bd", "#ff7f0e", "#2ca02c", "#d62728",
+            "#1f77b4", "#8c564b", "#bcbd22", "#e377c2", "#7f7f7f"
+        ]
+
         for feature in selected_rows:
             index = all_feature_names.index(feature)
-            mypalette.append(palettes.tue_plot[index])
+            mypalette.append(custom_palette[index])
 
         with plt.rc_context({**bundles.icml2022()}):
             fig, ax = plt.subplots(figsize = (7,3))
@@ -140,11 +147,11 @@ def bar_plots(regression_model):
 
                 if (i==0):
                     ax.barh(region, feature_importances*happiness_score, 
-                        left=left_positions*happiness_score, color=palettes.tue_plot, label=feature_names)
+                        left=left_positions*happiness_score, color=custom_palette, label=feature_names, height=0.5)
                 else:
                     ax.barh(region, feature_importances*happiness_score, 
-                        left=left_positions*happiness_score, color=palettes.tue_plot)
-
+                        left=left_positions*happiness_score, color=custom_palette, height=0.5)
+            
             # Adding labels and legend
             ax.set_xlabel("Happiness Score")
 
