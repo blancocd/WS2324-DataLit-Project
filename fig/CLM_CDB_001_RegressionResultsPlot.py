@@ -76,12 +76,13 @@ def bar_plots(regression_model):
             index = all_feature_names.index(feature)
             mypalette.append(custom_palette[index])
 
-        with plt.rc_context({**bundles.icml2022()}):
+        with plt.rc_context({**bundles.icml2022(), 'font.size': 12}):
             fig, ax = plt.subplots(figsize = (7,3))
             selected_data.T.plot(kind="bar", stacked=False, ax=ax, color = mypalette)
-            ax.set_ylabel("Explained Percentage")
-            ax.legend(title="Features", loc = 'upper right')
+            ax.set_ylabel("Explained Percentage (\%)", fontsize= 15)
+            ax.legend(title="Features", loc = 'upper right', fontsize=9)
             ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center', fontsize=ax.yaxis.label.get_fontsize())
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=10)
             ax.yaxis.set_major_formatter(FuncFormatter(percentage_formatter))
             # Setting y-axis range
             ax.set_ylim(0, 0.50)
@@ -138,12 +139,11 @@ def bar_plots(regression_model):
 
         # Plotting with rc_context
         regions = ["Germany", "Central Europe", "Europe", "Developed", "World"]
-        cutidx, ncols = 1, 7
+        cutidx, ncols = 1, 5
         if regression_model == "Lasso":
             cutidx, ncols = 5, 5
         with plt.rc_context({**bundles.icml2022()}):
-            fig, ax = plt.subplots(figsize=(7, 3))
-
+            fig, ax = plt.subplots(figsize=(11, 5))
             for i in range(len(regions)):
                 region = regions[i]
                 feature_importances = combined_df.loc[region, combined_df.columns[:-cutidx]].astype(float)  # Convert to float
@@ -164,12 +164,13 @@ def bar_plots(regression_model):
             # Ensure bars are drawn on top of grid lines
             ax.set_axisbelow(True)
             # Adding labels and legend
-            ax.set_xlabel("Happiness Score")
-
+            ax.set_xlabel("Happiness Score", fontsize= 15)
+            ax.set_yticklabels(ax.get_yticklabels(), fontsize=ax.xaxis.label.get_fontsize())
+            ax.set_xticklabels(ax.get_xticklabels(), fontsize=10)
             # Create a custom legend without including "Happiness Score"
             handles, labels = ax.get_legend_handles_labels()
-            ax.legend(handles, labels, title="Features", loc='upper center', 
-                    bbox_to_anchor=(0.5, -0.15),ncol=ncols, fancybox=True, shadow=True)
+            ax.legend(handles, labels, loc='upper center', 
+                    bbox_to_anchor=(0.5, -0.15),ncol=ncols, fancybox=True, shadow=True, fontsize = 13)
             plt.xlim([0,7.5])
             # Save the plot as PDF
             plt.savefig("StackedFeatureImportance_"+regression_model.replace(" ", '')+".pdf")
