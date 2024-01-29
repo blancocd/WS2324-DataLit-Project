@@ -83,7 +83,14 @@ def bar_plots(regression_model):
             ax.legend(title="Features", loc = 'upper right')
             ax.set_xticklabels(ax.get_xticklabels(), rotation=0, ha='center', fontsize=ax.yaxis.label.get_fontsize())
             ax.yaxis.set_major_formatter(FuncFormatter(percentage_formatter))
-        
+            # Setting y-axis range
+            ax.set_ylim(0, 0.50)
+            # Adding horizontal grid lines
+            ax.grid(axis='y')
+            # Ensure bars are drawn on top of grid lines
+            ax.set_axisbelow(True)
+            
+
             # Save the plot as PDF
             plt.savefig("FeatureImportanceComparison_"+regression_model.replace(" ", '')+".pdf")
             
@@ -152,6 +159,10 @@ def bar_plots(regression_model):
                     ax.barh(region, feature_importances*happiness_score, 
                         left=left_positions*happiness_score, color=custom_palette, height=0.5)
             
+            # Adding vertical grid lines
+            ax.grid(axis='x')
+            # Ensure bars are drawn on top of grid lines
+            ax.set_axisbelow(True)
             # Adding labels and legend
             ax.set_xlabel("Happiness Score")
 
