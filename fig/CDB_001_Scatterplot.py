@@ -69,16 +69,16 @@ def scatter(prevalence="Eating_Disorder", more_countries = False):
         return z*slope + bias, slope, bias
 
     from matplotlib.colors import ListedColormap
-    mpl.rcParams.update({'font.size': 5})
+    mpl.rcParams.update({'font.size': 7})
 
-    classes = ["Asia","Europe","Africa","North America","South America","Oceania", "Germany"]
+    classes = ["Asia","Europe","Africa","N. America","S. America","Oceania", "Germany"]
     colors = ListedColormap(["tab:gray","tab:orange","tab:green","tab:purple","tab:cyan", "tab:blue", "k"])
 
     fig, ax = plt.subplots()
-    s, slope, bias =linear_inc(s,5,40)
+    s, slope, bias =linear_inc(s,15,50)
 
     plt.grid()
-    scatter = ax.scatter(x,y,s=s, c=v,cmap=colors, linewidth=0.25, edgecolor='k')
+    scatter = ax.scatter(x,y,s=s, c=v,cmap=colors, linewidth=0.05, edgecolor='k')
     plt.xlabel("Log GDP per capita")
     plt.ylabel("Happiness Score")
 
@@ -102,12 +102,13 @@ def scatter(prevalence="Eating_Disorder", more_countries = False):
         plt.text(x[i]+0.045, y[i]-0.2, country)
                 
     # produce a legend with the unique colors from the scatter
-    legend1 = ax.legend(handles=scatter.legend_elements()[0][:-1], labels=classes, loc="lower right")
+    legend1 = ax.legend(handles=scatter.legend_elements()[0][:-1], labels=classes, loc="lower right", fontsize=7)
     ax.add_artist(legend1)
 
     # produce a legend with a cross section of sizes from the scatter
     kw = dict(prop="sizes", num=3, alpha=0.6, fmt="{x:.2f}\%", func=lambda s: (s-bias)/slope)
-    legend2 = ax.legend(*scatter.legend_elements(**kw),loc="upper left", title="Prevalence of\n"+prevalence.replace('_',' '))
+    legend2 = ax.legend(*scatter.legend_elements(**kw),loc="upper left", fontsize=7,
+                        title="Prevalence of\n"+prevalence.replace('_',' '))
 
     plt.savefig("scatter_happiness_gdp_"+prevalence+".pdf")
 
